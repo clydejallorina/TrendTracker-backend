@@ -1,0 +1,3 @@
+[submodule "TrendTracker-frontend"]
+	path = TrendTracker-frontend
+	url = https://github.com/reannu123/TrendTracker-frontend

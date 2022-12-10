@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    restart: on-failure
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASS}
+    volumes:
+      - "redis_data:/data"
+    command: sh -c "redis-server --requirepass $$REDIS_PASSWORD"
+  db:
+    image: "postgres:12"
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  web:
+    restart: on-failure
+    image: server_web
+    build: .
+    command: >
+      sh -c "cd /web/ &&
+             python manage.py collectstatic --noinput &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             gunicorn -c ../config/gunicorn/dev.py"
+    volumes:
+      - .:/web
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+  celery_worker:
+    restart: on-failure
+    image: server_web
+    build: .
+    command: >
+      sh -c "cd /web/ &&
+             wait-for web:9001 -t 120 -- celery -A TallyDisplay worker -l INFO -B"
+    env_file:
+      - .env
+    volumes:
+      - .:/web
+    depends_on:
+      - db
+      - redis
+      - web
+  nginx:
+    image: "nginx:latest"
+    volumes:
+      - ./src/config/nginx:/etc/nginx/conf.d
+      - ./src/TootTally/staticfiles:/var/www/TootTally/static/
+    ports:
+      - 80:80
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  redis_data:
