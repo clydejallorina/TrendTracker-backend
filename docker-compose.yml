@@ -18,7 +18,7 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-  web:
+  api:
     restart: on-failure
     image: server_web
     build: .
@@ -41,7 +41,7 @@ services:
     build: .
     command: >
       sh -c "cd /web/ &&
-             wait-for web:9001 -t 120 -- celery -A TallyDisplay worker -l INFO -B"
+             wait-for api:9001 -t 120 -- celery -A TrendTracker worker -l INFO -B"
     env_file:
       - .env
     volumes:
@@ -49,16 +49,27 @@ services:
     depends_on:
       - db
       - redis
-      - web
+      - api
+  frontend:
+    image: server_web
+    build: .
+    command: >
+      sh -c ""
+    volumes:
+      - .:/web
+    depends_on:
+      - api
+    env_file:
+      - .env
   nginx:
     image: "nginx:latest"
     volumes:
-      - ./src/config/nginx:/etc/nginx/conf.d
-      - ./src/TootTally/staticfiles:/var/www/TootTally/static/
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./TrendTracker/staticfiles:/var/www/TrendTracker/static/
     ports:
       - 80:80
     depends_on:
-      - web
+      - api
 
 volumes:
   postgres_data:
