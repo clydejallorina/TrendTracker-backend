@@ -23,13 +23,12 @@ services:
     image: server_web
     build: ./TrendTracker/
     command: >
-      sh -c "cd /web/ &&
-             python manage.py collectstatic --noinput &&
+      sh -c "python manage.py collectstatic --noinput &&
              python manage.py makemigrations &&
              python manage.py migrate &&
              python manage.py runserver"
     volumes:
-      - .:/web
+      - ./TrendTracker/:/web
     depends_on:
       - db
       - redis
@@ -41,11 +40,11 @@ services:
     build: ./TrendTracker/
     command: >
       sh -c "cd /web/ &&
-             wait-for api:9001 -t 120 -- celery -A TrendTracker worker -l INFO -B"
+             wait-for api:8000 -t 120 -- celery -A TrendTracker worker -l INFO -B"
     env_file:
       - .env
     volumes:
-      - .:/web
+      - ./TrendTracker/:/web
     depends_on:
       - db
       - redis
@@ -53,10 +52,9 @@ services:
   frontend:
     image: server_frontend
     build: ./TrendTracker-frontend/
-    command: >
-      sh -c ""
     volumes:
-      - .:/web
+      - ./TrendTracker-frontend/:/web
+    command: sh -c "ls -la && npm i && npm start"
     depends_on:
       - api
     env_file:
@@ -64,12 +62,13 @@ services:
   nginx:
     image: "nginx:latest"
     volumes:
-      - ./config/nginx:/etc/nginx/conf.d
+      - ./TrendTracker/config/nginx:/etc/nginx/conf.d
       - ./TrendTracker/staticfiles:/var/www/TrendTracker/static/
     ports:
       - 80:80
     depends_on:
       - api
+      - frontend
 
 volumes:
   postgres_data:

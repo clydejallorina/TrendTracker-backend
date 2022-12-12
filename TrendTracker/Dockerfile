@@ -22,7 +22,7 @@ RUN mkdir -p /var/log/gunicorn/
 RUN mkdir -p /var/run/gunicorn/
 
 # Copy project to container
-ADD ./TrendTracker/ /web/
+ADD ./TrendTracker /web/
 
 # Make sure wait-for works
 RUN apt-get update
