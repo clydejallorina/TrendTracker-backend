@@ -21,13 +21,13 @@ services:
   api:
     restart: on-failure
     image: server_web
-    build: .
+    build: ./TrendTracker/
     command: >
       sh -c "cd /web/ &&
              python manage.py collectstatic --noinput &&
              python manage.py makemigrations &&
              python manage.py migrate &&
-             gunicorn -c ../config/gunicorn/dev.py"
+             python manage.py runserver"
     volumes:
       - .:/web
     depends_on:
@@ -38,7 +38,7 @@ services:
   celery_worker:
     restart: on-failure
     image: server_web
-    build: .
+    build: ./TrendTracker/
     command: >
       sh -c "cd /web/ &&
              wait-for api:9001 -t 120 -- celery -A TrendTracker worker -l INFO -B"
@@ -51,8 +51,8 @@ services:
       - redis
       - api
   frontend:
-    image: server_web
-    build: .
+    image: server_frontend
+    build: ./TrendTracker-frontend/
     command: >
       sh -c ""
     volumes:
