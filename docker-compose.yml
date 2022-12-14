@@ -54,7 +54,7 @@ services:
     build: ./TrendTracker-frontend/
     volumes:
       - ./TrendTracker-frontend/:/web
-    command: sh -c "ls -la && npm i && npm start"
+    command: sh -c "npm i && npm start"
     depends_on:
       - api
     env_file:

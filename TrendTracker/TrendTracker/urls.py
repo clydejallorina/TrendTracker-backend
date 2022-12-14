@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from TTBackend.views import *
+from TTBackend.api_views import *
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('api/admin/', admin.site.urls),
+    path('api/products/', product_rankings, name="products"),
+    path('api/users/', user_rankings, name="users"),
 ]
