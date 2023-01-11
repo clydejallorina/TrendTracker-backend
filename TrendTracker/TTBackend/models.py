@@ -9,6 +9,7 @@ class TiktokUser(models.Model):
     points = models.BigIntegerField(default=0)
     positivity = models.CharField(max_length=16, default="neutral")
     url = models.URLField(max_length=256, default="")
+    avatar = models.URLField(max_length=256, default="")
 
 class Product(models.Model):
     name = models.CharField(max_length=256)
