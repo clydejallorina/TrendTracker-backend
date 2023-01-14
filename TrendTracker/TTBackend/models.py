@@ -10,6 +10,8 @@ class TiktokUser(models.Model):
     positivity = models.CharField(max_length=16, default="neutral")
     url = models.URLField(max_length=256, default="")
     avatar = models.URLField(max_length=256, default="")
+    hashtags = models.CharField(max_length=4096, default="")
+    nouns = models.CharField(max_length=4096, default="")
 
 class Product(models.Model):
     name = models.CharField(max_length=256)
