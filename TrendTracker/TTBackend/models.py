@@ -12,6 +12,10 @@ class TiktokUser(models.Model):
     avatar = models.URLField(max_length=256, default="")
     hashtags = models.CharField(max_length=4096, default="")
     nouns = models.CharField(max_length=4096, default="")
+    
+class TiktokHashtag(models.Model):
+    hashtag = models.CharField(max_length=128, default="")
+    points = models.BigIntegerField(default=0)
 
 class Product(models.Model):
     name = models.CharField(max_length=256)

@@ -13,3 +13,6 @@ def product_rankings(request):
 def user_rankings(request):
     rankings = TiktokUser.objects.all().order_by("-points")
     return HttpResponse(json.dumps(list(rankings.values("username", "points", "positivity", "avatar", "hashtags", "nouns"))))
+
+def hashtags(request):
+    pass
